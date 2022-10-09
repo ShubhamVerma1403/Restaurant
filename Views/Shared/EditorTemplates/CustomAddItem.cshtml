@@ -1,0 +1,50 @@
+﻿@model Restaurant.ViewModel.GetItems
+
+<div class="k-edit-form-container">
+    <h3>Customized Person edit template</h3>
+    <br />
+    
+
+    <div class="k-edit-label">
+        @Html.LabelFor(model => model.ItemName)
+    </div>
+    <div class="k-edit-field">
+        @Html.EditorFor(model => model.ItemName)
+        @Html.ValidationMessageFor(model => model.ItemName)
+    </div>
+    <div class="k-edit-label">
+        @Html.LabelFor(model => model.CategoryName)
+    </div>
+    <div class="k-edit-field">
+
+        @(Html.Kendo().DropDownListFor(M=>M.CategoryId)
+        .DataTextField("CategoryName")
+        .DataValueField("Id")
+        .DataSource(source =>
+        {
+            source.Read(read =>
+            {
+                read.Action("GetCategory", "FoodHub");
+            })
+            .ServerFiltering(true);
+        })
+        )
+    </div>
+
+    <div class="k-edit-label">
+        @Html.LabelFor(model => model.Price)
+    </div>
+    <div class="k-edit-field">
+        @Html.EditorFor(model => model.Price)
+        @Html.ValidationMessageFor(model => model.Price)
+    </div>
+    <div class="k-edit-label">
+        @Html.LabelFor(model => model.Description)
+    </div>
+    <div class="k-edit-field">
+        @Html.EditorFor(model => model.Description)
+        @Html.ValidationMessageFor(model => model.Description)
+    </div>
+</div>
+
+

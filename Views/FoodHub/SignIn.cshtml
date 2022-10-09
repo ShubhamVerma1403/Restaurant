@@ -1,0 +1,136 @@
+﻿
+@{
+    ViewBag.Title = "SignIn";
+}
+<style>
+
+    body {
+        background-color: papayawhip;
+    }
+
+    .signUp-form, .signUp-Image {
+        width: 90%;
+        overflow: hidden;
+        margin: auto;
+    }
+
+    .container {
+        margin-top: 40px;
+        width: 900px;
+        background: #ffff;
+        display: flex;
+        box-shadow: 0px 15px 16.83px 0.17px rgba(0, 0, 0, 0.05);
+        border-radius: 20px;
+        padding-bottom: 10px;
+    }
+
+    .signUp-content {
+        width: 50%;
+        overflow: hidden;
+    }
+
+    img {
+        margin-top: 20px;
+        max-width: 100%;
+    }
+
+    .link {
+        margin-left: 110px;
+    }
+</style>
+<div class="container">
+    <div class="signUp-content">
+        <div class="signUp-form">
+            <div id="validation-success"></div>
+            @(Html.Kendo().Form<Restaurant.ViewModel.AddUser>()
+            .Name("formExample")
+            .HtmlAttributes(new { action = "SignIn", method = "POST" })
+            .Validatable(v =>
+            {
+                v.ValidateOnBlur(true);
+                v.ValidationSummary(vs => vs.Enable(false));
+            })
+            .Items(items =>
+            {
+                items.AddGroup()
+                .Label("Registration Form")
+                .Items(i =>
+                {
+                    i.Add()
+                        .Field(f => f.Email)
+                        .Label(l => l.Text("Email:"))
+                        .Id("email")
+                        .EditorTemplateHandler("EmailEditor");
+
+                    i.Add()
+                        .Field(f => f.Password)
+                        .Label(l => l.Text("Password:"))
+                        .Id("password")
+                        .Hint("Hint: enter alphanumeric characters only.")
+                        .EditorTemplateHandler("setPasswordEditor");
+                });
+            })
+            .Events(ev => ev.ValidateField("onFormValidateField").Submit("onFormSubmit").Clear("onFormClear"))
+            )
+        </div>
+    </div>
+    <div class="signUp-content">
+        <div class="signUp-Image">
+            <figure><img src="~/Content/Images/test2.jpg" alt="sing up image"></figure>
+            <span class="link">
+                @Html.ActionLink("Create an account", "SignUp", "FoodHub", new { area = "" }, null)
+            </span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setPasswordEditor(container, options) {
+        $('<input type="password" id="password" name="' + options.field + '" title="Password" required="required" autocomplete="off" aria-labelledby="Password-form-label" data-bind="value: Password" aria-describedby="Password-form-hint"/>')
+            .appendTo(container)
+            .kendoTextBox();
+    }
+    function EmailEditor(container, options) {
+        $('<input type="email" id="email" name="' + options.field + '" title="Email" required="required" />')
+            .appendTo(container)
+            .kendoTextBox();
+    }
+
+    function onFormValidateField(e) {
+        $("#validation-success").html("");
+    }
+
+    function onFormSubmit(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: '/FoodHub/SignIn',
+            method: 'POST',
+            data: {
+
+                email: $('#email').val(),
+                password: $('#password').val()
+
+            },
+            success: function (result) {
+                if (result == "success") {
+                    window.location.href = "FoodHub/Main";
+                } else {
+                    $("#validation-success").html("<div class='k-messagebox k-messagebox-error'>Wrong Email or Password</div>");
+                }
+            },
+            error: function (jqXHR) {
+
+            }
+        })
+    }
+
+    function onFormClear(e) {
+        $("#validation-success").html("");
+    }
+</script>
+
+
+
+
+

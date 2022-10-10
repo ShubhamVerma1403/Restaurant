@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="FoodHubModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="FoodHubModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Audit">
           <Key>
             <PropertyRef Name="ID" />
@@ -12,7 +12,7 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="OrderId" Type="int" />
-          <Property Name="ItemId" Type="int" />
+          <Property Name="ItemName" Type="varchar" MaxLength="10" />
           <Property Name="ActionType" Type="varchar" MaxLength="1" Nullable="false" />
           <Property Name="FieldName" Type="varchar" MaxLength="15" />
           <Property Name="OldValue" Type="varchar" MaxLength="255" />
@@ -46,7 +46,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="ItemId" Type="int" Nullable="false" />
+          <Property Name="ItemName" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="Quantity" Type="int" Nullable="false" />
           <Property Name="Price" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="OrderedDateTime" Type="datetime" Nullable="false" />
@@ -77,18 +77,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Orders_Items">
-          <End Role="Items" Type="Self.Items" Multiplicity="1" />
-          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Items">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Orders">
-              <PropertyRef Name="ItemId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Orders_Users">
           <End Role="Users" Type="Self.Users" Multiplicity="1" />
           <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
@@ -116,7 +104,9 @@
           <Parameter Name="PhoneNo" Type="varchar" Mode="In" />
           <Parameter Name="responseMessage" Type="varchar" Mode="InOut" />
         </Function>
-        <Function Name="Auditing" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="Auditing" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="responseMessage" Type="varchar" Mode="InOut" />
+        </Function>
         <Function Name="DeleteItem" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ItemId" Type="int" Mode="In" />
           <Parameter Name="ResponseMessage" Type="varchar" Mode="InOut" />
@@ -159,17 +149,12 @@
             <End Role="Categories" EntitySet="Categories" />
             <End Role="Items" EntitySet="Items" />
           </AssociationSet>
-          <AssociationSet Name="FK_Orders_Items" Association="Self.FK_Orders_Items">
-            <End Role="Items" EntitySet="Items" />
-            <End Role="Orders" EntitySet="Orders" />
-          </AssociationSet>
           <AssociationSet Name="FK_Orders_Users" Association="Self.FK_Orders_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="Orders" EntitySet="Orders" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="FoodHubModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -180,7 +165,7 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <Property Name="OrderId" Type="Int32" />
-          <Property Name="ItemId" Type="Int32" />
+          <Property Name="ItemName" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="ActionType" Type="String" MaxLength="1" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="FieldName" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Name="OldValue" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
@@ -209,7 +194,6 @@
           <Property Name="CreatedDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="UpdatedDateTime" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Category" Relationship="Self.FK_Items_Categories" FromRole="Items" ToRole="Categories" />
-          <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Items" FromRole="Items" ToRole="Orders" />
         </EntityType>
         <EntityType Name="Order">
           <Key>
@@ -217,11 +201,10 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="ItemId" Type="Int32" Nullable="false" />
+          <Property Name="ItemName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Quantity" Type="Int32" Nullable="false" />
           <Property Name="Price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="OrderedDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Item" Relationship="Self.FK_Orders_Items" FromRole="Orders" ToRole="Items" />
           <NavigationProperty Name="User" Relationship="Self.FK_Orders_Users" FromRole="Orders" ToRole="Users" />
         </EntityType>
         <EntityType Name="User">
@@ -251,18 +234,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Orders_Items">
-          <End Role="Items" Type="Self.Item" Multiplicity="1" />
-          <End Role="Orders" Type="Self.Order" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Items">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Orders">
-              <PropertyRef Name="ItemId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Orders_Users">
           <End Role="Users" Type="Self.User" Multiplicity="1" />
           <End Role="Orders" Type="Self.Order" Multiplicity="*" />
@@ -285,10 +256,6 @@
             <End Role="Categories" EntitySet="Categories" />
             <End Role="Items" EntitySet="Items" />
           </AssociationSet>
-          <AssociationSet Name="FK_Orders_Items" Association="Self.FK_Orders_Items">
-            <End Role="Items" EntitySet="Items" />
-            <End Role="Orders" EntitySet="Orders" />
-          </AssociationSet>
           <AssociationSet Name="FK_Orders_Users" Association="Self.FK_Orders_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="Orders" EntitySet="Orders" />
@@ -308,14 +275,16 @@
             <Parameter Name="PhoneNo" Mode="In" Type="String" />
             <Parameter Name="responseMessage" Mode="InOut" Type="String" />
           </FunctionImport>
-          <FunctionImport Name="Auditing" ReturnType="Collection(FoodHubModel.Auditing_Result)" />
+          <FunctionImport Name="Auditing" ReturnType="Collection(FoodHubModel.Auditing_Result)">
+          <Parameter Name="responseMessage" Mode="InOut" Type="String" />
+          </FunctionImport>
           <FunctionImport Name="DeleteItem">
             <Parameter Name="ItemId" Mode="In" Type="Int32" />
             <Parameter Name="ResponseMessage" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="GetCategory" ReturnType="Collection(FoodHubModel.GetCategory_Result)" />
           <FunctionImport Name="GetItems" ReturnType="Collection(FoodHubModel.GetItems_Result)">
-            <Parameter Name="ResponseMessage" Mode="InOut" Type="String" />
+          <Parameter Name="ResponseMessage" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="GetItemsByCategoryId" ReturnType="Collection(FoodHubModel.GetItemsByCategoryId_Result)">
             <Parameter Name="CategoryId" Mode="In" Type="Int32" />
@@ -346,7 +315,7 @@
           <Property Type="Int32" Name="ID" Nullable="false" />
           <Property Type="String" Name="FirstName" Nullable="false" MaxLength="15" />
           <Property Type="Int32" Name="OrderId" Nullable="true" />
-          <Property Type="String" Name="ItemName" Nullable="false" MaxLength="10" />
+          <Property Type="String" Name="ItemName" Nullable="true" MaxLength="10" />
           <Property Type="String" Name="ActionType" Nullable="false" MaxLength="1" />
           <Property Type="String" Name="FieldName" Nullable="true" MaxLength="15" />
           <Property Type="String" Name="OldValue" Nullable="true" MaxLength="255" />
@@ -371,12 +340,13 @@
         </ComplexType>
         <ComplexType Name="GetOrderDetailByUserId_Result">
           <Property Type="Int32" Name="Id" Nullable="false" />
-          <Property Type="String" Name="ItemName" Nullable="false" MaxLength="10" />
+          <Property Type="String" Name="ItemName" Nullable="false" MaxLength="20" />
           <Property Type="Int32" Name="Quantity" Nullable="false" />
           <Property Type="Decimal" Name="Price" Nullable="false" Precision="18" Scale="0" />
         </ComplexType>
         <ComplexType Name="GetUserInfo_Result">
           <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="FirstName" Nullable="false" MaxLength="15" />
           <Property Type="String" Name="Email" Nullable="false" MaxLength="30" />
           <Property Type="Binary" Name="Password" Nullable="false" MaxLength="64" />
           <Property Type="Boolean" Name="IsAdmin" Nullable="false" />
@@ -393,7 +363,7 @@
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="OrderId" ColumnName="OrderId" />
-                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
                 <ScalarProperty Name="ActionType" ColumnName="ActionType" />
                 <ScalarProperty Name="FieldName" ColumnName="FieldName" />
                 <ScalarProperty Name="OldValue" ColumnName="OldValue" />
@@ -430,7 +400,7 @@
               <MappingFragment StoreEntitySet="Orders">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
                 <ScalarProperty Name="Price" ColumnName="Price" />
                 <ScalarProperty Name="OrderedDateTime" ColumnName="OrderedDateTime" />
@@ -512,6 +482,7 @@
             <ResultMapping>
               <ComplexTypeMapping TypeName="FoodHubModel.GetUserInfo_Result">
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="IsAdmin" ColumnName="IsAdmin" />

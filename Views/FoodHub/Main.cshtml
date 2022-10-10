@@ -2,166 +2,46 @@
 @{
     ViewBag.Title = "Main";
 }
-<style>
-    * {
-        margin: 0px;
-        padding: 0px;
-    }
-
-    #navbar {
-        @*position:fixed;*@
-        right: 0;
-        left: 0;
-        display: flex;
-        @*align-items: center;*@
-        position: sticky;
-        top: 0px;
-        background-color: black;
-        padding-left:20px;
-        @*justify-content: center;*@
-    }
-
-     #navbar ul {
-            display: flex;
-            align-items: center;
-            margin-bottom:-11px;
-      }
-
-     #navbar ul li {
-                list-style: none;
-                font-size: 1.3rem;
-                padding: 0px 14px;
-     }
-     #navbar ul li input {
-                    color: white;
-                    display: block;
-                    padding: 3px 10px;
-                    border-radius: 20px;
-                    text-decoration: none;
-     }
-        @*#navbar ul li:nth-child(5) {
-            position: absolute;
-            right: 100px;
-        }
-        #navbar ul li:nth-child(6) {
-            position: absolute;
-            right: 4px;
-        }*@
-        #navbar ul li:last-child {
-            position: absolute;
-            right: 4px;
-        }
-        #navbar ul li:last-child {
-            position: absolute;
-            right: 4px;
-        }
-        #navbar ul li:nth-last-child(2) {
-            position: absolute;
-            left: 940px;
-        } 
-        .nav {
-            padding-left: 35px;
-            padding-top: 20px;
-        }
-    .btn-position{
-        position:absolute;
-        right:420px;
-        bottom:40px;
-       
-    }
-    @*.popup div {
-        text-align: center;
-        bottom:20px;
-        
-    }*@
-    
-
-
-    .popup  {
-        width: 1000px;
-        height: 250px;
-        padding: 15px;
-        background-color: white;
-        position: absolute;
-        top: 54px;
-        border: 2px solid;
-        border-color: black;
-        @*text-align: center;*@
-        visibility: hidden;
-    }
-    
-    .auditing{
-        display:none;
-    }
-    .grid{
-        display:block;
-    }
-    .audit-open {
-        visibility: visible;
-    }
-    .audit-close{
-        visibility:hidden;
-    }
-    .grid-open{
-        visibility:visible;
-    }
-    .grid-close{
-        visibility:hidden;
-    }
-
-    .popup-open {
-        visibility: visible;
-    }
-
-    .popup button {
-        align-self: flex-end;
-    }
-</style>
+<link href="~/Content/Main.css" rel="stylesheet" type="text/css" />
 <header>
     <nav id="navbar">
         <div id="logo">
             <h3>FOOD HUB</h3>
         </div>
         <ul>
-
-            <li><input id="btnGrid" class="btn-link btn-new d-flex" type="button" value="Home" /></li>
+           <li><input id="btnItem" class="btn-link btn-new d-flex" type="button" value="Home" /></li>
 
             @if (Session["IsAdmin"].ToString() == "True")
             {
-
                 <li><input id="btnAudit" class="btn-link btn-new d-flex" type="button" value="Audit" /></li>
-                <li><h4>Loged in as Admin</h4></li>
-
+                <li><h4>Admin Page</h4></li>
             }
             else
             {
-                <li><input id="btnAdd" class="btn-link btn-new d-flex" type="button" value="Menu" /></li>
+                <li><input id="btnMenu" class="btn-link btn-new d-flex" type="button" value="Menu" /></li>
                 <li><input id="btnMyCart" class="btn-link btn-new d-flex" type="button" value="MyCart" /></li>
                 <li><input id="btnOrder" class="btn-link btn-new d-flex" type="button" value="Order" /></li>
                 <li><h4>Hello @Session["UserName"] </h4></li>
             }
-
             <li class="btn-link btn-logout  d-flex">@Html.ActionLink("Logout", "SignOut", "FoodHub", new { area = "" }, null)</li>
         </ul>
     </nav>
-   
-    
-</header>
+ </header>
 
 
-
-<div id="gridHome" class="grid" >
-    @if (Session["IsAdmin"].ToString() == "True")
-    {
-        @(Html.Kendo().Grid<Restaurant.ViewModel.GetItems>()
-            .Name("grid")
+<div main-content>
+    <div id="item-content">
+        @if (Session["IsAdmin"].ToString() == "True")
+        {
+            @(Html.Kendo().Grid<Restaurant.ViewModel.GetItems>()
+            .Name("edti-item")
             .Columns(columns =>
             {
-                columns.Bound(p => p.ItemName).Title("Product Name");
+                columns.Bound(p => p.ItemName).Title("Item Name").Width(130);
                 columns.Bound(p => p.CategoryName).Title("Category").Width(130);
                 columns.Bound(p => p.Price).Title("Price").Width(130);
-                columns.Bound(p => p.Description).Title("Description").Width(130);
-                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                columns.Bound(p => p.Description).Title("Description");
+                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
 
             })
             .ToolBar(toolbar => toolbar.Create())
@@ -182,22 +62,21 @@
                 .Read(read => read.Action("GetItem", "FoodHub"))
                 .Update(update => update.Action("UpdateItem", "FoodHub"))
                 .Destroy(update => update.Action("DeleteItem", "FoodHub"))
-
             )
          )
-    }
-    else
-    {
-        @(Html.Kendo().Grid<Restaurant.Models.GetItems_Result>
+        }
+        else
+        {
+            @(Html.Kendo().Grid<Restaurant.Models.GetItems_Result>
         ()
-        .Name("grid")
+        .Name("Item")
         .Columns(columns =>
         {
-            columns.Bound(p => p.ItemName).Title("Product Name");
+            columns.Bound(p => p.ItemName).Title("Product Name").Width(130);
             columns.Bound(p => p.CategoryName).Title("Category").Width(130);
             columns.Bound(p => p.Price).Title("Price").Width(130);
-            columns.Bound(p => p.Description).Title("Description").Width(130);
-            columns.Command(command => command.Custom("Add to Cart").Click("Add")).Width(180);
+            columns.Bound(p => p.Description).Title("Description");
+            columns.Command(command => command.Custom("Add to Cart").Click("Add")).Width(120);
         })
         .Pageable()
         .Sortable()
@@ -208,107 +87,67 @@
         .PageSize(20)
         .Model(model => model.Id(p => p.Id))
         .Read(read => read.Action("GetItem", "FoodHub"))
-
-
         ))
-    }
+        }
 
 
-</div>
-<div id="audit" class="auditing">
-    @(Html.Kendo().Grid<Restaurant.Models.Auditing_Result>
-        ()
-        .Name("grid")
-        .Columns(columns =>
-        {
-            columns.Bound(p => p.FirstName).Title("Name");
-            columns.Bound(p => p.OrderId).Title("OrderId").Width(130);
-            columns.Bound(p => p.ItemName).Title("Item Name").Width(130);
-            columns.Bound(p => p.ActionType).Title("ActionType").Width(130);
-            columns.Bound(p => p.OldValue).Title("OldValue").Width(130);
-            columns.Bound(p => p.NewValue).Title("NewValue").Width(130);
-            columns.Bound(p => p.AccessedDTTM).Title("AccessedDTTM").Width(130);
-        })
-        .Pageable()
-        .Sortable()
-        .Scrollable()
-        .HtmlAttributes(new { style = "height:550px;" })
-        .DataSource(dataSource => dataSource
-        .Ajax()
-        .PageSize(20)
-        .Model(model => model.Id(p => p.ID))
-        .Read(read => read.Action("GetAuditDetail", "FoodHub"))
-
-
-        ))
-</div>
-<div id="myCart" class="popup">
-    <fieldset>
-        <legend>Restaurant Listed items</legend>
-        <table style="width:100%" id="tblRestaurantItemList">
-            <thead>
-                <tr>
-                    <th hidden>
-                        Item Id
-                    </th>
-                    <th>
-                        Item Name
-                    </th>
-                    <th>
-                        Unit Price
-                    </th>
-                    <th>
-                        Quantity
-                    </th>
-
-                    <th>
-                        Total Price
-                    </th>
-                    <th>
-                        Action
-                    </th>
-
-
-                </tr>
-            </thead>
-        </table>
-
-    </fieldset>
-    <div class="btn-position">
-        <input id="btncancel" type='button' value='Cancel' name='cancel' class='btn btn-primary ' />
-        <input id="btnplaceorder" type='button' value='Placeorder' name='placeorder' class='btn btn-success ' />
     </div>
+
+    <div id="audit-content"></div>
     
 
+    <div id="orderPlaced" class="ordred-popup">
+        <fieldset>
+            <h3>Order Placed!</h3>
+            <h5>Our executive will contact you soon</h5>
+        </fieldset>
+        
+            <input id="btnOk" type='button' value='OK' name='placeorder' class='btn  btn-success ' />
+        
+    </div>
+
+    <div id="myCart" class="popup">
+        <fieldset>
+            <legend>Selected Items</legend>
+            <table style="width:100%" id="tblRestaurantItemList">
+                <thead>
+                    <tr>
+                        <th hidden>
+                            Item Id
+                        </th>
+                        <th>
+                            Item Name
+                        </th>
+                        <th>
+                            Unit Price
+                        </th>
+                        <th>
+                            Quantity
+                        </th>
+
+                        <th>
+                            Total Price
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+
+        </fieldset>
+        <div class="btn-position">
+            <input id="btncancel" type='button' value='Cancel' name='cancel' class='btn btn-primary ' />
+            <input id="btnplaceorder" type='button' value='Placeorder' name='placeorder' class='btn btn-success ' />
+        </div>
+    </div>
 </div>
 
+<script src="~/Scripts/Main.js"></script>
 <script>
-    var grid = document.getElementById("gridHome");
-    var audit = document.getElementById("audit");
-    $("#btnGrid").click(function () {
-        
-
-            audit.style.display = "none";
-            grid.style.display = "inline-block";
-            
-        
-        
-    });
-    $("#btnAudit").click(function () {
-            grid.style.display = "none";
-            audit.style.display = "inline-block";
-        @*popup.classList.add("popup-open");*@
-        
-        
-     });
 
 
-    var popup = document.getElementById("myCart");
 
-
-    $("btnGrid").click(function () {
-        $("gridHome").modal("show");
-    })
     var itemCount = 0;
     var totalItemList;
     var ItemId;
@@ -317,6 +156,7 @@
     var quantity;
     var totalprice;
     var check = true;
+
     function Add(e) {
         e.preventDefault();
         if (itemCount == 0) {
@@ -327,84 +167,92 @@
              ItemName = dataItem.ItemName;
              ItemPrice = dataItem.Price;
 
-            console.log(itemCount);
+
         } else {
             dataItem = this.dataItem($(e.currentTarget).closest("tr"));
             if (dataItem.Id == ItemId) {
                 itemCount++
-                console.log(itemCount);
             }
-            
         }
         quantity = itemCount;
         totalprice = ItemPrice * quantity;
     }
-    $('#btncancel').click(function () {
-        itemCount = 0;
-        check = true;
-        popup.classList.remove("popup-open");
+    var order_popup = document.getElementById("orderPlaced");
+    var popup = document.getElementById("myCart");
 
-    })
-
-    $('#btnplaceorder').click(function () {
-
-        popup.classList.remove("popup-open");
-        $.ajax({
-            url: 'https://localhost:44348/api/values/order',
-            method: 'POST',
-            data: {
-                userId: @HttpContext.Current.Session["Id"],
-                itemId: ItemId,
-                price: totalprice,
-                quantity: quantity
-
-            },
-            success: function (result) {
-                $("#validation-success").html("<div class='k-messagebox k-messagebox-success'>Registration Successfull!</div>");
-
-            },
-            error: function (msg) {
-                $("#validation-success").html("<div class='k-messagebox k-messagebox-error'>User already exist</div>");
-            }
-        })
-
-    })
     $('#btnMyCart').click(function () {
+
         popup.classList.add("popup-open");
-
-
-         ItemList = "<tr><td hidden> " + ItemId + "</td><td>"
-            + ItemName + "</td><td>" +
-            parseFloat(ItemPrice).toFixed(2) + "</td><td>" +
-            parseFloat(quantity).toFixed(2) + "</td><td>"
-            + parseFloat(totalprice).toFixed(2) + "</td> <td> <input type='button' value='Remove' name='remove' class='btn btn-danger' onclick='RemoveItem(this)'/> </td ></tr >";
         if (itemCount) {
-            if (check == true) {
-                totalItemList.append(ItemList);
-                
-                check = false;
-            } else {
-                $(ItemId).closest('tr').remove();
-                
-                totalItemList.append(ItemList);
+            ItemList = "<tr><td hidden> " + ItemId + "</td><td>"
+                + ItemName + "</td><td>" +
+                parseFloat(ItemPrice).toFixed(2) + "</td><td>" +
+                parseFloat(quantity).toFixed(2) + "</td><td>"
+                + parseFloat(totalprice).toFixed(2) + "</td> <td> <input type='button' value='Remove' name='remove' class='btn btn-danger' onclick='RemoveItem(this)'/> </td ></tr >";
 
-                
-            }
-            
-            
+            totalItemList.append(ItemList);
+        }
+
+
+
+    })
+
+    $('#btncancel').click(function () {
+        if ($('#myTable tr').length > 1) {
+            $('#tblRestaurantItemList tr:last').remove();
         }
         itemCount = 0;
-        check = true;
         
-        
+        popup.classList.remove("popup-open");
+
+    })
+
+    $('#btnOk').click(function (){
+        order_popup.classList.remove("ordered-popup-open");
     })
 
 
+    $('#btnplaceorder').click(function () {
+        if (itemCount) {
+            $.ajax({
+                url: 'https://localhost:44348/api/values/order',
+                method: 'POST',
+                data: {
+                    userId: @HttpContext.Current.Session["Id"],
+                    itemId: ItemId,
+                    price: totalprice,
+                    quantity: quantity
+                },
+                success: function (result) {
+                    
+                    $('#tblRestaurantItemList tr:last').remove();
+                    popup.classList.remove("popup-open");
+                    order_popup.classList.add("ordered-popup-open");
+                    itemCount = 0;
+
+                },
+                error: function (msg) {
+                    alert("Order not Placed")
+                    $('#tblRestaurantItemList tr:last').remove();
+                    popup.classList.remove("popup-open");
+                    itemCount = 0;
+                }
+            })
+            
+        }
+        else {
+            alert("Please Select some item")
+            popup.classList.remove("popup-open");
+        }
+        
+
+
+    })
     function RemoveItem(itemId) {
         $(itemId).closest('tr').remove();
         itemCount = 0;
         check = true;
-        @*EnableDisableCheckOut();*@
+
     }
 
 </script>

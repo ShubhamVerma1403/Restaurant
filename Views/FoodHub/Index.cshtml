@@ -6,3 +6,56 @@
 <h2>Index</h2>
 <h2>@Session["UserName"]</h2>
 
+$("#btnAudit").click(function () {
+    $("#grid").hide();
+    $("#Add").hide();
+    $("#audit").toggle();
+
+
+
+$("#audit").kendoGrid({
+    height: 530,
+    toolbar: ["search"],
+    columns: [
+        { field: "Username" },
+        { field: "BookName" },
+        { field: "Operation" },
+        { field: "NewValue" },
+        { field: "OldValue" },
+        { field: "CreatedDateTime" }
+    ],
+    dataSource: {
+        type: "aspnetmvc-ajax",
+        transport: {
+            idField: "ID",
+            read: {
+                url: "/api/Books/GetAudit",
+                type: "GET"
+            }
+        },
+        schema: {
+            data: "Data",
+            model: {
+                id: "ID",
+                fields: {
+                    ID: { type: "number" },
+                    Username: { type: "string" },
+                    BookName: { type: "string" },
+                    Operation: { type: "string" },
+                    NewValue: { type: "string" },
+                    OldValue: { type: "string" },
+                    CreatedDateTime: { type: "date" }
+                }
+            }
+        },
+        serverPaging: true,
+        serverSorting: true,
+        serverFiltering: true,
+        serverGrouping: true,
+        serverAggregates: true,
+    },
+    pageable: true,
+    navigatable: true
+})
+});
+

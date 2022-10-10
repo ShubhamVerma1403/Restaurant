@@ -59,9 +59,13 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>packages\NLog.5.0.4\lib\net46\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.9.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.WebApi.Client.5.2.9\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
@@ -279,6 +283,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\AddUser.cs" />
     <Compile Include="ViewModel\GetItems.cs" />
+    <Compile Include="ViewModel\OrderItem.cs" />
     <Compile Include="ViewModel\UserSignIn.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -660,6 +665,9 @@
     <Content Include="Content\kendo\2022.3.913\Uniform\sprite_2x.png" />
     <Content Include="Content\kendo\2022.3.913\Uniform\sprite_kpi.png" />
     <Content Include="Content\kendo\2022.3.913\Uniform\sprite_kpi_2x.png" />
+    <Content Include="Content\Main.css" />
+    <Content Include="Content\SignIn.css" />
+    <Content Include="Content\SignUp.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -1971,7 +1979,10 @@
     <Content Include="Scripts\kendo\2022.3.913\messages\kendo.messages.zh-HK.min.js" />
     <Content Include="Scripts\kendo\2022.3.913\messages\kendo.messages.zh-TW.min.js" />
     <Content Include="Scripts\kendo\2022.3.913\pako_deflate.min.js" />
+    <Content Include="Scripts\Main.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\SiginIn.js" />
+    <Content Include="Scripts\SignUp.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -1983,7 +1994,6 @@
     <Content Include="Content\Site.css" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Boolean.cshtml" />

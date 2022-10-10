@@ -1,5 +1,6 @@
 ﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using NLog;
 using Restaurant.Models;
 using Restaurant.ViewModel;
 using System;
@@ -17,29 +18,31 @@ namespace Restaurant.Controllers
     
     public class FoodHubController : Controller
     {
-        HttpClient hc = new HttpClient();
+        string baseUrl = "https://localhost:44348/";
+        public readonly Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        HttpClient httpClient = new HttpClient();
         private FoodHubEntities foodHubEntities;
         private object varhashedBytes;
-        public static int UserId;
         public List<GetCategory_Result> Categorylist;
+
         public FoodHubController()
         {
             this.foodHubEntities = new FoodHubEntities();
             this.Categorylist = new List<GetCategory_Result>();
 
         }
-        public ActionResult Index()
+        
+        public ActionResult SignIn()
         {
-            if (Session["Idss"] != null)
-            {
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("SignIn", "FoodHub");
-            }
-            
+            return View();
         }
+
+        public ActionResult SignUp()
+        {
+            return View();
+        }
+
+        //MainPage
         public ActionResult Main()
         {
             if (Session["Id"] != null)
@@ -50,40 +53,48 @@ namespace Restaurant.Controllers
             {
                 return RedirectToAction("SignIn", "FoodHub");
             }
-
-        }
-
-        public ActionResult SignUp()
-        {
-            return View();
-        }
-        public ActionResult SignIn()
-        {
-            return View();
         }
 
         [HttpPost]
-        public JsonResult SignIn(AddUser Userdata)
+        public async Task<ActionResult> SignIn(AddUser Userdata)
         {
+            Logger.Info("Entering the FoodHub Controller.    SignIn method");
+
             string result = "fail";
-            using (var sha512 = SHA512.Create())
+           
+            List<GetUserInfo_Result> userList = new List<GetUserInfo_Result>();
+
+            httpClient.BaseAddress = new Uri(baseUrl);
+            HttpResponseMessage message = await httpClient.GetAsync("api/values/SignIn/");
+
+            if (message.IsSuccessStatusCode)
             {
-                varhashedBytes = sha512.ComputeHash(Encoding.UTF8.GetBytes(Userdata.Password));
-                 var _currentUser = foodHubEntities.Users.FirstOrDefault(user => user.Email == Userdata.Email && user.Password == varhashedBytes);
-                if (_currentUser != null)
+                var display = message.Content.ReadAsAsync<List<GetUserInfo_Result>>();
+                userList = display.Result;
+
+                using (var sha512 = SHA512.Create())
                 {
-                    HttpContext.Session["Id"]= Convert.ToInt32(_currentUser.Id.ToString());
-                    HttpContext.Session["UserName"] = _currentUser.FirstName.ToString();
-                    HttpContext.Session["IsAdmin"] = _currentUser.IsAdmin.ToString();
-                    //Session["Id"] = Convert.ToInt32(_currentUser.Id.ToString());
-                    //Session["UserName"] = _currentUser.FirstName.ToString();
-                    //Session["IsAdmin"] = _currentUser.IsAdmin.ToString();
-                    result = "success";
+                    varhashedBytes = sha512.ComputeHash(Encoding.UTF8.GetBytes(Userdata.Password));
+                    var _currentUser = userList.FirstOrDefault(user => user.Email == Userdata.Email &&  user.Password.ToString() == varhashedBytes.ToString());
+                    
+                    if (_currentUser != null)
+                    {
+                        HttpContext.Session["Id"] = Convert.ToInt32(_currentUser.Id.ToString());
+                        HttpContext.Session["UserName"] = _currentUser.FirstName.ToString();
+                        HttpContext.Session["IsAdmin"] = _currentUser.IsAdmin.ToString();
+
+                        Logger.Info("Exit Sign In method.     SignIn success");
+
+                        result = "success";
+
+                        return Json(result, JsonRequestBehavior.AllowGet);
+                    }
                 }
-               
             }
+            Logger.Info("Exit Sign In method.     SignIn fail");
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+        
         public ActionResult SignOut()
         {
             HttpContext.Session.Clear();
@@ -94,61 +105,40 @@ namespace Restaurant.Controllers
         {
             List<GetItems_Result> list = new List<GetItems_Result>();
 
+            httpClient.BaseAddress = new Uri(baseUrl);
 
-            hc.BaseAddress = new Uri("https://localhost:44348/");
-
-            HttpResponseMessage message = await hc.GetAsync("api/values/getItem/");
+            HttpResponseMessage message = await httpClient.GetAsync("api/values/getItem/");
 
             if (message.IsSuccessStatusCode)
             {
                 var display = message.Content.ReadAsAsync<List<GetItems_Result>>();
                 list = display.Result;
-
             }
             return Json(list.ToDataSourceResult(request));
-            
-        }
-        public async Task<ActionResult> GetAuditDetail([DataSourceRequest] DataSourceRequest request)
-        {
-            List<Auditing_Result> Auditlist = new List<Auditing_Result>();
-
-
-            hc.BaseAddress = new Uri("https://localhost:44348/");
-
-            HttpResponseMessage message = await hc.GetAsync("api/values/GetAuditDetail/");
-
-            if (message.IsSuccessStatusCode)
-            {
-                var display = message.Content.ReadAsAsync<List<Auditing_Result>>();
-                Auditlist = display.Result;
-
-            }
-            return Json(Auditlist.ToDataSourceResult(request));
-
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
         public async Task<ActionResult> AddItem([DataSourceRequest] DataSourceRequest request, GetItems item)
         {
-            var categoryName= foodHubEntities.Categories.FirstOrDefault(p=>p.Id==item.CategoryId);
+            var categoryName = foodHubEntities.Categories.FirstOrDefault(p => p.Id == item.CategoryId);
             item.CategoryName = categoryName.CategoryName;
+
             if (item != null && ModelState.IsValid)
             {
-                hc.BaseAddress = new Uri("https://localhost:44348/");
-                HttpResponseMessage message = await hc.PostAsJsonAsync("api/values/AddItem/", item);
+                httpClient.BaseAddress = new Uri(baseUrl);
+                HttpResponseMessage message = await httpClient.PostAsJsonAsync("api/values/AddItem/", item);
             }
-
             return Json(new[] { item }.ToDataSourceResult(request, ModelState));
         }
+
         [AcceptVerbs(HttpVerbs.Post)]
         public async Task<ActionResult> UpdateItem([DataSourceRequest] DataSourceRequest request, GetItems item)
         {
             if (item != null && ModelState.IsValid)
             {
-                hc.BaseAddress = new Uri("https://localhost:44348/");
-                HttpResponseMessage message = await hc.PostAsJsonAsync("api/values/UpdateItem/", item);
+                httpClient.BaseAddress = new Uri(baseUrl);
+                HttpResponseMessage message = await httpClient.PostAsJsonAsync("api/values/UpdateItem/", item);
             }
-
             return Json(new[] { item }.ToDataSourceResult(request, ModelState));
         }
 
@@ -157,10 +147,9 @@ namespace Restaurant.Controllers
         {
             if (item != null)
             {
-                hc.BaseAddress = new Uri("https://localhost:44348/");
-                HttpResponseMessage message = await hc.PostAsJsonAsync("api/values/DeleteItem/", item);
+                httpClient.BaseAddress = new Uri(baseUrl);
+                HttpResponseMessage message = await httpClient.PostAsJsonAsync("api/values/DeleteItem/", item);
             }
-
             return Json(new[] { item }.ToDataSourceResult(request, ModelState));
         }
 
@@ -168,10 +157,9 @@ namespace Restaurant.Controllers
         {
             List<GetCategory_Result> Categorylist = new List<GetCategory_Result>();
 
+            httpClient.BaseAddress = new Uri(baseUrl);
 
-            hc.BaseAddress = new Uri("https://localhost:44348/");
-
-            HttpResponseMessage message = await hc.GetAsync("api/values/GetCategory/");
+            HttpResponseMessage message = await httpClient.GetAsync("api/values/GetCategory/");
 
             if (message.IsSuccessStatusCode)
             {
@@ -180,5 +168,7 @@ namespace Restaurant.Controllers
             }
             return Json(Categorylist, JsonRequestBehavior.AllowGet);
         }
+
+        
     }
 }

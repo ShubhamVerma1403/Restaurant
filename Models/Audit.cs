@@ -17,7 +17,7 @@ namespace Restaurant.Models
         public int ID { get; set; }
         public int UserId { get; set; }
         public Nullable<int> OrderId { get; set; }
-        public Nullable<int> ItemId { get; set; }
+        public string ItemName { get; set; }
         public string ActionType { get; set; }
         public string FieldName { get; set; }
         public string OldValue { get; set; }

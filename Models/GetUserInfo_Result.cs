@@ -14,6 +14,7 @@ namespace Restaurant.Models
     public partial class GetUserInfo_Result
     {
         public int Id { get; set; }
+        public string FirstName { get; set; }
         public string Email { get; set; }
         public byte[] Password { get; set; }
         public bool IsAdmin { get; set; }

@@ -79,9 +79,9 @@ namespace Restaurant.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddUser", lastNameParameter, firstNameParameter, emailParameter, passwordParameter, phoneNoParameter, responseMessage);
         }
     
-        public virtual ObjectResult<Auditing_Result> Auditing()
+        public virtual ObjectResult<Auditing_Result> Auditing(ObjectParameter responseMessage)
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Auditing_Result>("Auditing");
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Auditing_Result>("Auditing", responseMessage);
         }
     
         public virtual int DeleteItem(Nullable<int> itemId, ObjectParameter responseMessage)

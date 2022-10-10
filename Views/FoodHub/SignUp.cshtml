@@ -2,39 +2,7 @@
 @{
     ViewBag.Title = "SignUp";
 }
-<style>
-    body{
-        background-color:papayawhip;
-    }
-    .signUp-form, .signUp-Image {
-        width: 90%;
-        overflow: hidden;
-        margin:auto;
-    }
-
-    .container {
-        margin-top:40px;
-        width: 900px;
-        background: #ffff;
-        display: flex;
-        box-shadow: 0px 15px 16.83px 0.17px rgba(0, 0, 0, 0.05);
-        border-radius: 20px;
-        padding-bottom:10px;
-    }
-    .signUp-content {
-        width: 50%;
-        overflow: hidden;
-    }
-    img {
-        margin-top:20px;
-        max-width: 100%;
-        
-    }.link{
-         margin-left:110px;
-        
-     }
-
-</style>
+<link href="~/Content/SignUp.css" rel="stylesheet" type="text/css" />
 <div class="container">
     <div class="signUp-content">
         <div class="signUp-form">
@@ -97,67 +65,6 @@
 </div>
 
 
-    <script>
-    function setPasswordEditor(container, options) {
-        $('<input type="password" id="password" name="' + options.field + '" title="Password" required="required" autocomplete="off" aria-labelledby="Password-form-label" data-bind="value: Password" aria-describedby="Password-form-hint"/>')
-            .appendTo(container)
-            .kendoTextBox();
-        }
-        function emailEditor(container, options) {
-            $('<input type="email" id="email" name="' + options.field + '" title="Email" required="required" />')
-                .appendTo(container)
-                .kendoTextBox();
-        }
-        function firstNameEditor(container, options) {
-            $('<input type="name" id="Firstname" name="' + options.field + '" title="First Name" required="required" />')
-                .appendTo(container)
-                .kendoTextBox();
-        }
-        function lastNameEditor(container, options) {
-            $('<input type="name" id="Lastname" name="' + options.field + '" title="Last Name" required="required" />')
-                .appendTo(container)
-                .kendoTextBox();
-        }
-        function phoneEditor(container, options) {
-            $('<input type="tel" id="phone" name="' + options.field + '" title="Phone No." required="required" />')
-                .appendTo(container)
-                .kendoTextBox();
-        }
-
-    function onFormValidateField(e) {
-        $("#validation-success").html("");
-    }
-
-    function onFormSubmit(e) {
-        e.preventDefault();
-        $.ajax({
-            url: 'https://localhost:44348/api/values/signup',
-            method: 'POST',
-            data: {
-                lastName: $('#Lastname').val(),
-                firstName: $('#Firstname').val(),
-                email: $('#email').val(),
-                password: $('#password').val(),
-                phoneNo_: $('#phone').val()
-            },
-            success: function (result) {
-                $("#validation-success").html("<div class='k-messagebox k-messagebox-success'>Registration Successfull! GO to SignIn Page</div>");
-                
-            },
-            error: function (msg) {
-                $("#validation-success").html("<div class='k-messagebox k-messagebox-error'>User already exist</div>");
-            }
-        })
-    }
-
-    function onFormClear(e) {
-        $("#validation-success").html("");
-    }
-    @*function registerscuccesful() {
-        swal({
-
-        })
-    }*@
-    </script>
+<script src="~/Scripts/SignUp.js"></script>    
 
 
